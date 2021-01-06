@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Subject } from 'rxjs';
+import { UiService } from '../shared/ui.service';
 import { ExerciseService } from '../training/exercise.service';
 import { AuthDataModel } from './auth-data-model';
 
@@ -10,7 +12,11 @@ import { AuthDataModel } from './auth-data-model';
 })
 export class AuthService {
 
-  constructor(private rout: Router, private afAuth: AngularFireAuth,private exerciseService:ExerciseService) { }
+  constructor(private rout: Router, 
+    private afAuth: AngularFireAuth,
+    private exerciseService:ExerciseService,
+    private snackBar:MatSnackBar,
+    private uiService:UiService) { }
 
   private user: Boolean=false;
   authChange = new Subject<boolean>();
@@ -32,25 +38,31 @@ export class AuthService {
   }
 
   registerUser(authData: AuthDataModel) {
+    this.uiService.loadingSpinner.next(true);
     console.log("IN Register service");
     this.afAuth.auth.createUserWithEmailAndPassword(authData.email, authData.password
     ).then(result=>{
+      this.uiService.loadingSpinner.next(false);
       console.log(result);
     }).catch((error)=>{
-      console.log(error);
+      this.uiService.loadingSpinner.next(false);
+     this.uiService.openSnackBar(error.message,null,3000);
     });
   
   }
 
   loginUser(authData: AuthDataModel) {
     console.log("IN LOGIN");
+    this.uiService.loadingSpinner.next(true);
     this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password
       ).then(result=>{
+        this.uiService.loadingSpinner.next(false);
         console.log(result)
       }).catch((error)=>{
-        console.log(error);
+        this.uiService.loadingSpinner.next(false);
+        this.uiService.openSnackBar(error.message,null,3000);
       });
-   
+      
   }
 
   logoutUser() {

@@ -12,9 +12,12 @@
             <mat-error *ngIf="pwdInput.hasError('required')">Required field</mat-error>
             <mat-error *ngIf="pwdInput.hasError('minlength')">Has to be atleast 6</mat-error>
         </mat-form-field>
-        <button mat-raised-button
+        <button *ngIf="!isLoading" mat-raised-button
         color="primary"
        type="submit"
          [disabled]="formLogin.invalid">Submit</button>
+        
+         <mat-spinner *ngIf="isLoading"></mat-spinner>
+
     </form>
 </section>
